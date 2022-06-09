@@ -1,0 +1,10 @@
+{
+  "domain": "blebox_shutterbox_tilt",
+  "name": "BleBox shutterBox with tilt",
+  "documentation": "https://github.com/andrzejchm/blebox-shutterbox-tilt",
+  "issue_tracker": "https://github.com/andrzejchm/blebox-shutterbox-tilt/issues",
+  "dependencies": [],
+  "config_flow": true,
+  "codeowners": ["@andrzejchm"],
+  "requirements": []
+}

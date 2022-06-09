@@ -1,0 +1,10 @@
+{
+  "_template": "https://github.com/oncleben31/cookiecutter-homeassistant-custom-component",
+  "class_name_prefix": "Shutterbox",
+  "domain_name": "blebox_shutterbox_tilt",
+  "friendly_name": "BleBox shutterBox with tilt",
+  "github_user": "andrzejchm",
+  "project_name": "blebox-shutterbox-tilt",
+  "test_suite": "yes",
+  "version": "1.0.0"
+}
