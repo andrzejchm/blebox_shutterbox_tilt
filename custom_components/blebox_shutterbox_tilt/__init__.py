@@ -6,19 +6,21 @@ https://github.com/andrzejchm/blebox-shutterbox-tilt
 """
 import asyncio
 import logging
-from typing import Optional, Dict
-import voluptuous as vol
+from typing import Dict
+from typing import Optional
 
+import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import ShutterboxApiClient
-from .const import API_CLIENT, DEFAULT_PORT
+from .const import API_CLIENT
 from .const import CONF_IP_ADDRESS
 from .const import CONF_PORT
 from .const import DATA
+from .const import DEFAULT_PORT
 from .const import DEVICE_INFO
 from .const import DOMAIN
 from .const import PLATFORMS

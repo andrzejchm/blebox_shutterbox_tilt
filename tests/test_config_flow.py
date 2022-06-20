@@ -2,13 +2,14 @@
 from unittest.mock import patch
 
 import pytest
-from homeassistant.core import HomeAssistant
-from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
-
-from custom_components.blebox_shutterbox_tilt.const import DOMAIN, COVER, CONF_PORT, CONF_IP_ADDRESS
+from custom_components.blebox_shutterbox_tilt.const import CONF_IP_ADDRESS
+from custom_components.blebox_shutterbox_tilt.const import CONF_PORT
+from custom_components.blebox_shutterbox_tilt.const import DOMAIN
 from homeassistant import config_entries
 from homeassistant import data_entry_flow
+from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
 from .const import MOCK_CONFIG
 
@@ -19,7 +20,7 @@ from .const import MOCK_CONFIG
 @pytest.fixture(autouse=True)
 def bypass_setup_fixture():
     """Prevent setup."""
-    with  patch(
+    with patch(
             "custom_components.blebox_shutterbox_tilt.async_setup_entry",
             return_value=True,
     ):
@@ -129,4 +130,4 @@ async def test_options_flow(hass: HomeAssistant, aioclient_mock: AiohttpClientMo
     assert result["title"] == "My ShutterBox"
 
     # Verify that the options were updated
-    assert entry.options == {CONF_PORT: 8080, CONF_IP_ADDRESS: "192.168.1.123" }
+    assert entry.options == {CONF_PORT: 8080, CONF_IP_ADDRESS: "192.168.1.123"}

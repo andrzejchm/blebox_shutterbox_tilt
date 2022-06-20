@@ -3,13 +3,12 @@ import asyncio
 
 import pytest
 from _pytest.logging import LogCaptureFixture
-from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
-
 from custom_components.blebox_shutterbox_tilt.api import ShutterboxApiClient
+from custom_components.blebox_shutterbox_tilt.errors import CannotConnectToShutterBox
+from custom_components.blebox_shutterbox_tilt.errors import InvalidDeviceTypeError
+from custom_components.blebox_shutterbox_tilt.errors import NoDeviceInfoError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-
-from custom_components.blebox_shutterbox_tilt.errors import CannotConnectToShutterBox, NoDeviceInfoError, \
-    InvalidDeviceTypeError
+from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
 
 async def test_api(hass, aioclient_mock: AiohttpClientMocker, caplog: LogCaptureFixture):
@@ -44,8 +43,7 @@ async def test_api(hass, aioclient_mock: AiohttpClientMocker, caplog: LogCapture
     )
     assert (await api.async_get_device_info()).get("deviceName") == "My ShutterBox"
 
-    aioclient_mock.get("http://192.168.1.123/api/shutter/state", json=
-    {
+    aioclient_mock.get("http://192.168.1.123/api/shutter/state", json={
         "shutter": {
             "state": 2,
             "currentPos": {

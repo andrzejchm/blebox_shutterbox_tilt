@@ -5,8 +5,10 @@ from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
-from . import ShutterboxApiClient, create_schema
-from .const import CONF_IP_ADDRESS, CONF_PORT
+from . import create_schema
+from . import ShutterboxApiClient
+from .const import CONF_IP_ADDRESS
+from .const import CONF_PORT
 from .errors import ErrorWithMessageId
 
 _LOGGER = logging.getLogger(__name__)
