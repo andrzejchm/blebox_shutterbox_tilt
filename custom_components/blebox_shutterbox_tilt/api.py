@@ -1,13 +1,12 @@
 """Sample API Client."""
-import asyncio
 import logging
-import socket
+from typing import Optional
 
 import aiohttp
-import async_timeout
+
+from homeassistant.core import HomeAssistant
 
 TIMEOUT = 10
-
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -16,60 +15,48 @@ HEADERS = {"Content-type": "application/json; charset=UTF-8"}
 
 class ShutterboxApiClient:
     def __init__(
-        self, username: str, password: str, session: aiohttp.ClientSession
+        self,
+        ip_address: str,
+        port: str,
+        session: aiohttp.ClientSession,
+        hass: HomeAssistant,
     ) -> None:
         """Sample API Client."""
-        self._username = username
-        self._passeword = password
+        self._ip_address = ip_address
+        self._port = port
         self._session = session
+        self._hass = hass
 
-    async def async_get_data(self) -> dict:
+    async def async_init_cover(self) -> Optional[dict]:
         """Get data from the API."""
-        url = "https://jsonplaceholder.typicode.com/posts/1"
-        return await self.api_wrapper("get", url)
+        state_response = await self._session.get(
+            f"http://{self._ip_address}/api/shutter/state"
+        )
+        json = await state_response.json()
+        if "shutter" in json.keys():
+            return json
+        return None
 
-    async def async_set_title(self, value: str) -> None:
-        """Get data from the API."""
-        url = "https://jsonplaceholder.typicode.com/posts/1"
-        await self.api_wrapper("patch", url, data={"title": value}, headers=HEADERS)
+    async def async_open_cover(self) -> None:
+        await self._session.get(f"http://{self._ip_address}/s/u/")
 
-    async def api_wrapper(
-        self, method: str, url: str, data: dict = {}, headers: dict = {}
-    ) -> dict:
-        """Get information from the API."""
-        try:
-            async with async_timeout.timeout(TIMEOUT, loop=asyncio.get_event_loop()):
-                if method == "get":
-                    response = await self._session.get(url, headers=headers)
-                    return await response.json()
+    async def async_close_cover(self) -> None:
+        await self._session.get(f"http://{self._ip_address}/s/d/")
 
-                elif method == "put":
-                    await self._session.put(url, headers=headers, json=data)
+    async def async_set_cover_position(self, position: int) -> None:
+        await self._session.get(f"http://{self._ip_address}/s/p/{position}/")
 
-                elif method == "patch":
-                    await self._session.patch(url, headers=headers, json=data)
+    async def async_stop_cover(self) -> None:
+        await self._session.get(f"http://{self._ip_address}/s/s/")
 
-                elif method == "post":
-                    await self._session.post(url, headers=headers, json=data)
+    async def async_open_cover_tilt(self) -> None:
+        await self._session.get(f"http://{self._ip_address}/s/t/100")
 
-        except asyncio.TimeoutError as exception:
-            _LOGGER.error(
-                "Timeout error fetching information from %s - %s",
-                url,
-                exception,
-            )
+    async def async_close_cover_tilt(self) -> None:
+        await self._session.get(f"http://{self._ip_address}/s/t/0")
 
-        except (KeyError, TypeError) as exception:
-            _LOGGER.error(
-                "Error parsing information from %s - %s",
-                url,
-                exception,
-            )
-        except (aiohttp.ClientError, socket.gaierror) as exception:
-            _LOGGER.error(
-                "Error fetching information from %s - %s",
-                url,
-                exception,
-            )
-        except Exception as exception:  # pylint: disable=broad-except
-            _LOGGER.error("Something really wrong happened! - %s", exception)
+    async def async_set_cover_tilt_position(self, position: int) -> None:
+        await self._session.get(f"http://{self._ip_address}/s/t/{position}")
+
+    async def async_stop_cover_tilt(self, position: int) -> None:
+        await self._session.get(f"http://{self._ip_address}/s/t/{position}")

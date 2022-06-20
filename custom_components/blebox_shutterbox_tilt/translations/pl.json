@@ -1,0 +1,27 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "BleBox shutterBox z obrotem",
+        "description": "Jeżeli potrzebujesz pomocy z konfiguracją, wejdź na: https://github.com/andrzejchm/blebox-shutterbox-tilt",
+        "data": {
+          "ip_address": "Adres IP",
+          "port": "Port"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Tylko jedno urządzenie o tych samych parametrach może być dodane."
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "data": {
+          "ip_address": "Adres IP",
+          "port": "Port"
+        }
+      }
+    }
+  }
+}

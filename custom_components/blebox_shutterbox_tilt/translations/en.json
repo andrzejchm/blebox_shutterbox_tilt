@@ -5,13 +5,10 @@
         "title": "BleBox shutterBox with tilt",
         "description": "If you need help with the configuration have a look here: https://github.com/andrzejchm/blebox-shutterbox-tilt",
         "data": {
-          "username": "Username",
-          "password": "Password"
+          "ip_address": "IP Address",
+          "port": "Port"
         }
       }
-    },
-    "error": {
-      "auth": "Username/Password is wrong."
     },
     "abort": {
       "single_instance_allowed": "Only a single instance is allowed."
@@ -21,9 +18,8 @@
     "step": {
       "user": {
         "data": {
-          "binary_sensor": "Binary sensor enabled",
-          "sensor": "Sensor enabled",
-          "switch": "Switch enabled"
+          "ip_address": "IP Address",
+          "port": "Port"
         }
       }
     }
