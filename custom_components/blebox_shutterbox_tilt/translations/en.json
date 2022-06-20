@@ -16,7 +16,8 @@
     "error": {
       "cannot_connect": "Cannot connect to shutterBox, make sure you've specified correct ip address and port",
       "no_device_info": "could not fetch device info. response is missing 'device' key.",
-      "invalid_device_type": "Fetched device info is not shutterBox"
+      "invalid_device_type": "Fetched device info is not shutterBox",
+      "unknown" : "something weird happened, please check logs"
     }
   },
   "options": {

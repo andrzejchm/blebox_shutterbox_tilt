@@ -3,15 +3,14 @@ import logging
 from typing import Dict
 from typing import Optional
 
-import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
+from . import create_schema
 from .api import ShutterboxApiClient
 from .const import CONF_IP_ADDRESS
 from .const import CONF_PORT
-from .const import DEFAULT_PORT
 from .const import DOMAIN
 from .errors import ErrorWithMessageId
 from .options_flow import ShutterboxOptionsFlow
@@ -68,6 +67,10 @@ class ShutterboxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             message = f"{ex}"
             _LOGGER.exception(message)
             self._errors["base"] = ex.message_id()
+        except Exception as ex:
+            message = f"{ex}"
+            _LOGGER.exception(message)
+            self._errors['base'] = "unknown"
 
         return None
 
@@ -83,29 +86,6 @@ class ShutterboxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Show the configuration form to edit location data."""
         return self.async_show_form(
             step_id="user",
-            data_schema=self._create_schema(user_input),
+            data_schema=create_schema(user_input),
             errors=self._errors,
-        )
-
-    @staticmethod
-    def _create_schema(
-            user_input: Optional[Dict[str, any]],
-    ) -> vol.Schema:
-        if user_input is not None:
-            ip_address = user_input.get(CONF_IP_ADDRESS) or ""
-            port = user_input.get(CONF_PORT) or DEFAULT_PORT
-        else:
-            ip_address = ""
-            port = DEFAULT_PORT
-        return vol.Schema(
-            {
-                vol.Required(
-                    CONF_IP_ADDRESS,
-                    default=ip_address,
-                ): str,
-                vol.Required(
-                    CONF_PORT,
-                    default=port,
-                ): int,
-            }
         )

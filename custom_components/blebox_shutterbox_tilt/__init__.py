@@ -6,13 +6,16 @@ https://github.com/andrzejchm/blebox-shutterbox-tilt
 """
 import asyncio
 import logging
+from typing import Optional, Dict
+import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import ShutterboxApiClient
-from .const import API_CLIENT
+from .const import API_CLIENT, DEFAULT_PORT
 from .const import CONF_IP_ADDRESS
 from .const import CONF_PORT
 from .const import DATA
@@ -40,7 +43,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     client = ShutterboxApiClient(ip_address, port, session, hass)
 
     hass.data[DOMAIN][entry.entry_id][API_CLIENT] = client
-    device_info = await client.async_get_device_info()
+    try:
+        device_info = await client.async_get_device_info()
+    except ConfigEntryNotReady as ex:
+        raise ex
+    except Exception as ex:
+        raise ConfigEntryNotReady(f"{ex}") from ex
     hass.data[DOMAIN][entry.entry_id][DEVICE_INFO] = device_info
 
     for platform in PLATFORMS:
@@ -72,3 +80,27 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload config entry."""
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)
+
+
+def create_schema(
+        user_input: Optional[Dict[str, any]],
+) -> vol.Schema:
+    """creates schema for config flow and options flow"""
+    if user_input is not None:
+        ip_address = user_input.get(CONF_IP_ADDRESS) or ""
+        port = user_input.get(CONF_PORT) or DEFAULT_PORT
+    else:
+        ip_address = ""
+        port = DEFAULT_PORT
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_IP_ADDRESS,
+                default=ip_address,
+            ): str,
+            vol.Required(
+                CONF_PORT,
+                default=port,
+            ): int,
+        }
+    )

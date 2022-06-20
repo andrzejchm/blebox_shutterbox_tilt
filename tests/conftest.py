@@ -13,27 +13,33 @@ pytest_plugins = "pytest_homeassistant_custom_component"
 def skip_notifications_fixture():
     """Skip notification calls."""
     with patch("homeassistant.components.persistent_notification.async_create"), patch(
-        "homeassistant.components.persistent_notification.async_dismiss"
+            "homeassistant.components.persistent_notification.async_dismiss"
     ):
         yield
 
 
-# This fixture, when used, will result in calls to async_get_data to return None. To have the call
+@pytest.fixture(autouse=True)
+def auto_enable_custom_integrations(enable_custom_integrations):
+    """auto enables custom integrations"""
+    yield
+
+
+# This fixture, when used, will result in calls to async_get_device_info to return None. To have the call
 # return a value, we would add the `return_value=<VALUE_TO_RETURN>` parameter to the patch call.
 @pytest.fixture(name="bypass_get_data")
 def bypass_get_data_fixture():
     """Skip calls to get data from API."""
-    with patch("custom_components.blebox_shutterbox_tilt.ShutterboxApiClient.async_get_data"):
+    with patch("custom_components.blebox_shutterbox_tilt.ShutterboxApiClient.async_get_device_info"):
         yield
 
 
-# In this fixture, we are forcing calls to async_get_data to raise an Exception. This is useful
+# In this fixture, we are forcing calls to async_get_device_info to raise an Exception. This is useful
 # for exception handling.
 @pytest.fixture(name="error_on_get_data")
 def error_get_data_fixture():
     """Simulate error when retrieving data from API."""
     with patch(
-        "custom_components.blebox_shutterbox_tilt.ShutterboxApiClient.async_get_data",
-        side_effect=Exception,
+            "custom_components.blebox_shutterbox_tilt.ShutterboxApiClient.async_get_device_info",
+            side_effect=Exception,
     ):
         yield

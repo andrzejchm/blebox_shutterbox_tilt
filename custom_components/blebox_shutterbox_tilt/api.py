@@ -35,8 +35,10 @@ class ShutterboxApiClient:
     async def async_get_device_info(self) -> Optional[dict]:
         """Gets device info"""
         try:
+            address = f"http://{self._ip_address}/api/device/state"
+            print(address)
             state_response = await self._session.get(
-                f"http://{self._ip_address}/api/device/state"
+                address
             )
         except Exception as ex:
             raise CannotConnectToShutterBox() from ex
@@ -44,9 +46,10 @@ class ShutterboxApiClient:
         device = json.get("device")
         if not device:
             raise NoDeviceInfoError()
-        if device and device.get("type") == "shutterBox":
-            return device
-        raise InvalidDeviceTypeError()
+
+        if device.get("type") != "shutterBox":
+            raise InvalidDeviceTypeError()
+        return device
 
     async def async_get_cover_state(self) -> Optional[dict]:
         """Get data from the API."""

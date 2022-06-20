@@ -16,7 +16,8 @@
     "error": {
       "cannot_connect": "Nie można połączyć się z shutterBox, upewnij się, że podałeś poprawny adres IP i port",
       "no_device_info": "Nie można pobrać informacji o urządzeniu. Odpowiedź nie posiada pola 'device'.",
-      "invalid_device_type": "Znalezione urządzenie to nie shutterBox"
+      "invalid_device_type": "Znalezione urządzenie to nie shutterBox",
+      "unknown" : "zaszło coś dziwnego, sprawdź logi"
     }
   },
   "options": {

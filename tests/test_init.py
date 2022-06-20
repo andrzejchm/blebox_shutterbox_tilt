@@ -1,20 +1,9 @@
 """Test BleBox shutterBox with tilt setup process."""
 import pytest
-from custom_components.blebox_shutterbox_tilt import (
-    async_reload_entry,
-)
-from custom_components.blebox_shutterbox_tilt import (
-    async_setup_entry,
-)
-from custom_components.blebox_shutterbox_tilt import (
-    async_unload_entry,
-)
-from custom_components.blebox_shutterbox_tilt import (
-    ShutterboxDataUpdateCoordinator,
-)
-from custom_components.blebox_shutterbox_tilt.const import (
-    DOMAIN,
-)
+from custom_components.blebox_shutterbox_tilt import async_reload_entry
+from custom_components.blebox_shutterbox_tilt import async_setup_entry
+from custom_components.blebox_shutterbox_tilt import async_unload_entry
+from custom_components.blebox_shutterbox_tilt.const import DOMAIN
 from homeassistant.exceptions import ConfigEntryNotReady
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -37,14 +26,14 @@ async def test_setup_unload_and_reload_entry(hass, bypass_get_data):
     assert await async_setup_entry(hass, config_entry)
     assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
     assert (
-        type(hass.data[DOMAIN][config_entry.entry_id]) == ShutterboxDataUpdateCoordinator
+            type(hass.data[DOMAIN][config_entry.entry_id]) == dict
     )
 
     # Reload the entry and assert that the data from above is still there
     assert await async_reload_entry(hass, config_entry) is None
     assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
     assert (
-        type(hass.data[DOMAIN][config_entry.entry_id]) == ShutterboxDataUpdateCoordinator
+            type(hass.data[DOMAIN][config_entry.entry_id]) == dict
     )
 
     # Unload the entry and verify that the data has been removed
