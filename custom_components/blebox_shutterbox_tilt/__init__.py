@@ -12,7 +12,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .data_update_coordinator import ShutterboxDataUpdateCoordinator
 from .api import ShutterboxApiClient
 from .const import (
     API_CLIENT,
@@ -22,7 +21,7 @@ from .const import (
     PLATFORMS,
     STARTUP_MESSAGE,
     DATA,
-    COORDINATOR,
+    DEVICE_INFO,
 )
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -43,13 +42,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     session = async_get_clientsession(hass)
     client = ShutterboxApiClient(ip_address, port, session, hass)
 
-    coordinator = ShutterboxDataUpdateCoordinator(hass, client=client)
-    hass.data[DOMAIN][entry.entry_id][COORDINATOR] = coordinator
     hass.data[DOMAIN][entry.entry_id][API_CLIENT] = client
-    await coordinator.async_refresh()
-
-    if not coordinator.last_update_success:
-        raise ConfigEntryNotReady
+    device_info = await client.async_get_device_info()
+    hass.data[DOMAIN][entry.entry_id][DEVICE_INFO] = device_info
 
     for platform in PLATFORMS:
         await hass.async_add_job(

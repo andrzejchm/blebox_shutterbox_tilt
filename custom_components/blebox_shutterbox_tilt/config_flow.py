@@ -6,8 +6,8 @@ import logging
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
-from blebox_uniapi import products
 
+from .errors import ErrorWithMessageId
 from .options_flow import ShutterboxOptionsFlow
 from .api import ShutterboxApiClient
 from .const import CONF_IP_ADDRESS, CONF_PORT, DOMAIN, DEFAULT_PORT
@@ -30,33 +30,41 @@ class ShutterboxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self._errors = {}
 
         if user_input is not None:
-            valid = await self._test_config(
+            device_info = await self._test_config(
                 user_input[CONF_IP_ADDRESS],
                 user_input[CONF_PORT],
             )
-            if valid:
+            if device_info:
                 return self.async_create_entry(
-                    title=user_input[CONF_IP_ADDRESS], data=user_input
+                    title=device_info.get("deviceName") or user_input[CONF_IP_ADDRESS],
+                    description=user_input[CONF_IP_ADDRESS],
+                    data=user_input,
                 )
             else:
-                self._errors["base"] = "auth"
-
-            return await self._show_config_form(user_input)
+                return await self._show_config_form(user_input)
 
         return await self._show_config_form(user_input)
 
-    async def _test_config(self, ip_address: str, port: str):
+    async def _test_config(
+        self,
+        ip_address: str,
+        port: int,
+    ) -> dict[str, any]:
         """Return true if credentials is valid."""
         try:
-            products.Products()
             session = async_create_clientsession(self.hass)
             client = ShutterboxApiClient(ip_address, port, session, self.hass)
-            await client.async_init_cover()
-            return True
-        except Exception as ex:  # pylint: disable=broad-except
-            _LOGGER.exception(f"{ex}")
-            pass
-        return False
+            device_info = await client.async_get_device_info()
+            if device_info is not None:
+                unique_id = device_info.get("id") or ip_address
+                await self.async_set_unique_id(unique_id)
+            self._abort_if_unique_id_configured()
+            return device_info
+        except ErrorWithMessageId as ex:
+            _LOGGER.exception("%s" % ex)
+            self._errors["base"] = ex.message_id()
+
+        return None
 
     @staticmethod
     @callback
@@ -66,7 +74,7 @@ class ShutterboxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def _show_config_form(
         self,
         user_input: Optional[Dict[str, any]],
-    ):  # pylint: disable=unused-argument
+    ):
         """Show the configuration form to edit location data."""
         return self.async_show_form(
             step_id="user",
