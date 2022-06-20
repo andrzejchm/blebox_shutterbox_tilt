@@ -12,7 +12,10 @@
 | `cover`  | Sets up shutterBox to be used as cover,allowing for setting position as well as tilt |
 
 ## Installation
+### Method 1 ([HACS](https://hacs.xyz/))
+> HACS > Integrations > Plus > blebox_shutterbox_tilt > Install
 
+### Method 2 (Manual)
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory (folder) there, you need to create it.
 3. In the `custom_components` directory (folder) create a new folder called `blebox_shutterbox_tilt`.
