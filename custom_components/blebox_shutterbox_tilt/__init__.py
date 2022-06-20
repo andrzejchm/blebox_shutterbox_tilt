@@ -9,20 +9,17 @@ import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import ShutterboxApiClient
-from .const import (
-    API_CLIENT,
-    CONF_IP_ADDRESS,
-    CONF_PORT,
-    DOMAIN,
-    PLATFORMS,
-    STARTUP_MESSAGE,
-    DATA,
-    DEVICE_INFO,
-)
+from .const import API_CLIENT
+from .const import CONF_IP_ADDRESS
+from .const import CONF_PORT
+from .const import DATA
+from .const import DEVICE_INFO
+from .const import DOMAIN
+from .const import PLATFORMS
+from .const import STARTUP_MESSAGE
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 

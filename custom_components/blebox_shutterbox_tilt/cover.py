@@ -1,23 +1,26 @@
 """Cover platform for BleBox shutterBox with tilt."""
-
 import logging
 from datetime import timedelta
 from typing import Optional
 
-from homeassistant.components.cover import (
-    CoverEntity,
-    CoverDeviceClass,
-    CoverEntityFeature,
-    ATTR_POSITION,
-    ATTR_TILT_POSITION,
-)
+from homeassistant.components.cover import ATTR_POSITION
+from homeassistant.components.cover import ATTR_TILT_POSITION
+from homeassistant.components.cover import CoverDeviceClass
+from homeassistant.components.cover import CoverEntity
+from homeassistant.components.cover import CoverEntityFeature
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import STATE_CLOSING, STATE_OPENING, STATE_CLOSED, STATE_OPEN
+from homeassistant.const import STATE_CLOSED
+from homeassistant.const import STATE_CLOSING
+from homeassistant.const import STATE_OPEN
+from homeassistant.const import STATE_OPENING
 from homeassistant.helpers.entity import DeviceInfo
 
 from .api import ShutterboxApiClient
-
-from .const import DOMAIN, STATE, API_CLIENT, DEVICE_INFO, VERSION
+from .const import API_CLIENT
+from .const import DEVICE_INFO
+from .const import DOMAIN
+from .const import STATE
+from .const import VERSION
 
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=60)
@@ -41,13 +44,13 @@ class BleboxShutterboxCover(CoverEntity):
         self._api = api
         self._config_entry = config_entry
         self._attr_supported_features = (
-                CoverEntityFeature.SET_POSITION
-                | CoverEntityFeature.SET_POSITION
-                | CoverEntityFeature.OPEN
-                | CoverEntityFeature.CLOSE
-                | CoverEntityFeature.OPEN_TILT
-                | CoverEntityFeature.CLOSE_TILT
-                | CoverEntityFeature.SET_TILT_POSITION
+            CoverEntityFeature.SET_POSITION
+            | CoverEntityFeature.SET_POSITION
+            | CoverEntityFeature.OPEN
+            | CoverEntityFeature.CLOSE
+            | CoverEntityFeature.OPEN_TILT
+            | CoverEntityFeature.CLOSE_TILT
+            | CoverEntityFeature.SET_TILT_POSITION
         )
 
     @property

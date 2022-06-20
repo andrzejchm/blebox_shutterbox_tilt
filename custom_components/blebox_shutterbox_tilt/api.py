@@ -5,11 +5,9 @@ from typing import Optional
 import aiohttp
 from homeassistant.core import HomeAssistant
 
-from .errors import (
-    InvalidDeviceTypeError,
-    NoDeviceInfoError,
-    CannotConnectToShutterBox,
-)
+from .errors import CannotConnectToShutterBox
+from .errors import InvalidDeviceTypeError
+from .errors import NoDeviceInfoError
 
 TIMEOUT = 10
 

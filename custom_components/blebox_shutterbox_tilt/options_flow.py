@@ -1,9 +1,9 @@
 """options flow"""
-
 import voluptuous as vol
-
 from homeassistant import config_entries
-from .const import CONF_IP_ADDRESS, CONF_PORT
+
+from .const import CONF_IP_ADDRESS
+from .const import CONF_PORT
 
 
 # TODO

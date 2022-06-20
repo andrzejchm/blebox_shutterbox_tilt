@@ -2,7 +2,6 @@
   "config": {
     "step": {
       "user": {
-        "title": "BleBox shutterBox with tilt",
         "description": "If you need help with the configuration have a look here: https://github.com/andrzejchm/blebox-shutterbox-tilt",
         "data": {
           "ip_address": "IP Address",
