@@ -1,31 +1,15 @@
 # BleBox shutterBox with tilt
 
 [![GitHub Release][releases-shield]][releases]
-[![GitHub Activity][commits-shield]][commits]
 [![License][license-shield]](LICENSE)
-
-[![pre-commit][pre-commit-shield]][pre-commit]
-[![Black][black-shield]][black]
-
-[![hacs][hacsbadge]][hacs]
-[![Project Maintenance][maintenance-shield]][user_profile]
 [![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 
-[![Discord][discord-shield]][discord]
-[![Community Forum][forum-shield]][forum]
-
-**TO BE REMOVED: If you need help, as a developer, to use this custom component tempalte,
-please look at the [User Guide in the Cookiecutter documentation](https://cookiecutter-homeassistant-custom-component.readthedocs.io/en/stable/quickstart.html)**
 
 **This component will set up the following platforms.**
 
-| Platform        | Description                                     |
-| --------------- | ----------------------------------------------- |
-| `binary_sensor` | Show something `True` or `False`.               |
-| `sensor`        | Show info from BleBox shutterBox with tilt API. |
-| `switch`        | Switch something `True` or `False`.             |
-
-![example][exampleimg]
+| Platform | Description                                                                          |
+|----------|--------------------------------------------------------------------------------------|
+| `cover`  | Sets up shutterBox to be used as cover,allowing for setting position as well as tilt |
 
 ## Installation
 
@@ -36,26 +20,6 @@ please look at the [User Guide in the Cookiecutter documentation](https://cookie
 5. Place the files you downloaded in the new directory (folder) you created.
 6. Restart Home Assistant
 7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "BleBox shutterBox with tilt"
-
-Using your HA configuration directory (folder) as a starting point you should now also have this:
-
-```text
-custom_components/blebox_shutterbox_tilt/translations/en.json
-custom_components/blebox_shutterbox_tilt/translations/fr.json
-custom_components/blebox_shutterbox_tilt/translations/nb.json
-custom_components/blebox_shutterbox_tilt/translations/sensor.en.json
-custom_components/blebox_shutterbox_tilt/translations/sensor.fr.json
-custom_components/blebox_shutterbox_tilt/translations/sensor.nb.json
-custom_components/blebox_shutterbox_tilt/translations/sensor.nb.json
-custom_components/blebox_shutterbox_tilt/__init__.py
-custom_components/blebox_shutterbox_tilt/api.py
-custom_components/blebox_shutterbox_tilt/binary_sensor.py
-custom_components/blebox_shutterbox_tilt/config_flow.py
-custom_components/blebox_shutterbox_tilt/const.py
-custom_components/blebox_shutterbox_tilt/manifest.json
-custom_components/blebox_shutterbox_tilt/sensor.py
-custom_components/blebox_shutterbox_tilt/switch.py
-```
 
 ## Configuration is done in the UI
 
@@ -73,24 +37,11 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 
 ---
 
-[integration_blueprint]: https://github.com/custom-components/integration_blueprint
-[black]: https://github.com/psf/black
-[black-shield]: https://img.shields.io/badge/code%20style-black-000000.svg?style=for-the-badge
 [buymecoffee]: https://www.buymeacoffee.com/andrzejchm
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
-[commits-shield]: https://img.shields.io/github/commit-activity/y/andrzejchm/blebox-shutterbox-tilt.svg?style=for-the-badge
-[commits]: https://github.com/andrzejchm/blebox-shutterbox-tilt/commits/main
 [hacs]: https://hacs.xyz
-[hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
-[discord]: https://discord.gg/Qa5fW2R
-[discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
-[exampleimg]: example.png
-[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
-[forum]: https://community.home-assistant.io/
-[license-shield]: https://img.shields.io/github/license/andrzejchm/blebox-shutterbox-tilt.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/andrzejchm/blebox_shutterbox_tilt.svg?style=for-the-badge
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40andrzejchm-blue.svg?style=for-the-badge
-[pre-commit]: https://github.com/pre-commit/pre-commit
-[pre-commit-shield]: https://img.shields.io/badge/pre--commit-enabled-brightgreen?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/andrzejchm/blebox-shutterbox-tilt.svg?style=for-the-badge
-[releases]: https://github.com/andrzejchm/blebox-shutterbox-tilt/releases
+[releases-shield]: https://img.shields.io/github/release/andrzejchm/blebox_shutterbox_tilt.svg?style=for-the-badge
+[releases]: https://github.com/andrzejchm/blebox_shutterbox_tilt/releases
 [user_profile]: https://github.com/andrzejchm
