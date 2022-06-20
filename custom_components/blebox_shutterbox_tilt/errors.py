@@ -1,12 +1,15 @@
+"""errors used across the integration"""
 from abc import ABC, abstractmethod
 
 from homeassistant.exceptions import ConfigEntryNotReady
 
 
 class ErrorWithMessageId(ConfigEntryNotReady, ABC):
+    """Error with message id for translation purposes"""
+
     @abstractmethod
     def message_id(self) -> str:
-        pass
+        """translation message_id"""
 
 
 class CannotConnectToShutterBox(ErrorWithMessageId):

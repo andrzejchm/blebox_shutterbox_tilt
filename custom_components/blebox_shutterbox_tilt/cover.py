@@ -131,7 +131,9 @@ class BleboxShutterboxCover(CoverEntity):
         )
 
     async def async_update(self) -> None:
-        _LOGGER.info(f"performing async update for {self.entity_id}")
+        """updates data"""
+        message = f"performing async update for {self.entity_id}"
+        _LOGGER.info(message)
         cover_state = await self._api.async_get_cover_state()
         await self._update_hass_state(cover_state)
 

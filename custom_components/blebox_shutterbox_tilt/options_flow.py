@@ -1,6 +1,9 @@
-from homeassistant import config_entries
-from .const import CONF_IP_ADDRESS, PLATFORMS, CONF_PORT
+"""options flow"""
+
 import voluptuous as vol
+
+from homeassistant import config_entries
+from .const import CONF_IP_ADDRESS, CONF_PORT
 
 
 # TODO
@@ -26,8 +29,14 @@ class ShutterboxOptionsFlow(config_entries.OptionsFlow):
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_IP_ADDRESS, default=self.options.get(CONF_IP_ADDRESS, '')): str,
-                    vol.Required(CONF_IP_ADDRESS, default=self.options.get(CONF_PORT, 80)): int
+                    vol.Required(
+                        CONF_IP_ADDRESS,
+                        default=self.options.get(CONF_IP_ADDRESS, ''),
+                    ): str,
+                    vol.Required(
+                        CONF_IP_ADDRESS,
+                        default=self.options.get(CONF_PORT, 80),
+                    ): int
                 }
             ),
         )

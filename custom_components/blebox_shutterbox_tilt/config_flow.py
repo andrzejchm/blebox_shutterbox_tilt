@@ -1,8 +1,9 @@
 """Adds config flow for BleBox shutterBox with tilt."""
 from typing import Optional, Dict
+import logging
 
 import voluptuous as vol
-import logging
+
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
@@ -40,16 +41,16 @@ class ShutterboxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     description=user_input[CONF_IP_ADDRESS],
                     data=user_input,
                 )
-            else:
-                return await self._show_config_form(user_input)
+
+            return await self._show_config_form(user_input)
 
         return await self._show_config_form(user_input)
 
     async def _test_config(
-        self,
-        ip_address: str,
-        port: int,
-    ) -> dict[str, any]:
+            self,
+            ip_address: str,
+            port: int,
+    ) -> Optional[Dict[str, any]]:
         """Return true if credentials is valid."""
         try:
             session = async_create_clientsession(self.hass)
@@ -61,7 +62,8 @@ class ShutterboxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             self._abort_if_unique_id_configured()
             return device_info
         except ErrorWithMessageId as ex:
-            _LOGGER.exception("%s" % ex)
+            message = f"{ex}"
+            _LOGGER.exception(message)
             self._errors["base"] = ex.message_id()
 
         return None
@@ -72,8 +74,8 @@ class ShutterboxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return ShutterboxOptionsFlow(config_entry)
 
     async def _show_config_form(
-        self,
-        user_input: Optional[Dict[str, any]],
+            self,
+            user_input: Optional[Dict[str, any]],
     ):
         """Show the configuration form to edit location data."""
         return self.async_show_form(
@@ -84,7 +86,7 @@ class ShutterboxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     def _create_schema(
-        user_input: Optional[Dict[str, any]],
+            user_input: Optional[Dict[str, any]],
     ) -> vol.Schema:
         if user_input is not None:
             ip_address = user_input.get(CONF_IP_ADDRESS) or ""
