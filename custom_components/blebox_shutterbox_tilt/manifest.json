@@ -4,7 +4,9 @@
   "documentation": "https://github.com/andrzejchm/blebox-shutterbox-tilt",
   "issue_tracker": "https://github.com/andrzejchm/blebox-shutterbox-tilt/issues",
   "dependencies": [],
+  "version": "1.0.0",
   "config_flow": true,
+  "iot_class": "local_polling",
   "codeowners": ["@andrzejchm"],
   "requirements": []
 }

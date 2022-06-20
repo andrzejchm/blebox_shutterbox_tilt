@@ -1,0 +1,33 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Jeżeli potrzebujesz pomocy z konfiguracją, wejdź na: https://github.com/andrzejchm/blebox-shutterbox-tilt",
+        "data": {
+          "ip_address": "Adres IP",
+          "port": "Port"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Tylko jedno urządzenie o tych samych parametrach może być dodane.",
+      "already_configured": "Urządzenie jest już skonfigurowane"
+    },
+    "error": {
+      "cannot_connect": "Nie można połączyć się z shutterBox, upewnij się, że podałeś poprawny adres IP i port",
+      "no_device_info": "Nie można pobrać informacji o urządzeniu. Odpowiedź nie posiada pola 'device'.",
+      "invalid_device_type": "Znalezione urządzenie to nie shutterBox",
+      "unknown": "zaszło coś dziwnego, sprawdź logi"
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "data": {
+          "ip_address": "Adres IP",
+          "port": "Port"
+        }
+      }
+    }
+  }
+}

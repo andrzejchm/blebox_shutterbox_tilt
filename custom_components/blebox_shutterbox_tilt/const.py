@@ -5,30 +5,26 @@ DOMAIN = "blebox_shutterbox_tilt"
 DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "1.0.0"
 
-ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
 ISSUE_URL = "https://github.com/andrzejchm/blebox-shutterbox-tilt/issues"
 
-# Icons
-ICON = "mdi:format-quote-close"
-
-# Device classes
-BINARY_SENSOR_DEVICE_CLASS = "connectivity"
 
 # Platforms
-BINARY_SENSOR = "binary_sensor"
-SENSOR = "sensor"
-SWITCH = "switch"
-PLATFORMS = [BINARY_SENSOR, SENSOR, SWITCH]
+COVER = "cover"
+PLATFORMS = [COVER]
 
 
 # Configuration and options
-CONF_ENABLED = "enabled"
-CONF_USERNAME = "username"
-CONF_PASSWORD = "password"
+CONF_IP_ADDRESS = "ip_address"
+CONF_PORT = "port"
+STATE = "state"
+DATA = "data"
+API_CLIENT = "api_client"
+DEVICE_INFO = "device_info"
 
 # Defaults
 DEFAULT_NAME = DOMAIN
-
+DEFAULT_SETUP_TIMEOUT = 10
+DEFAULT_PORT = 80
 
 STARTUP_MESSAGE = f"""
 -------------------------------------------------------------------

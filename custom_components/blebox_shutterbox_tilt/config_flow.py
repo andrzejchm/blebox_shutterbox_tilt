@@ -1,106 +1,91 @@
 """Adds config flow for BleBox shutterBox with tilt."""
-import voluptuous as vol
+import logging
+from typing import Dict
+from typing import Optional
+
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
+from . import create_schema
 from .api import ShutterboxApiClient
-from .const import CONF_PASSWORD
-from .const import CONF_USERNAME
+from .const import CONF_IP_ADDRESS
+from .const import CONF_PORT
 from .const import DOMAIN
-from .const import PLATFORMS
+from .errors import ErrorWithMessageId
+from .options_flow import ShutterboxOptionsFlow
+
+_LOGGER = logging.getLogger(__name__)
 
 
-class ShutterboxFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
+class ShutterboxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for blebox_shutterbox_tilt."""
 
     VERSION = 1
-    CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
+    CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
     def __init__(self):
         """Initialize."""
         self._errors = {}
 
-    async def async_step_user(self, user_input=None):
+    async def async_step_user(self, user_input: dict = None):
         """Handle a flow initialized by the user."""
         self._errors = {}
 
-        # Uncomment the next 2 lines if only a single instance of the integration is allowed:
-        # if self._async_current_entries():
-        #     return self.async_abort(reason="single_instance_allowed")
-
         if user_input is not None:
-            valid = await self._test_credentials(
-                user_input[CONF_USERNAME], user_input[CONF_PASSWORD]
+            device_info = await self._test_config(
+                user_input[CONF_IP_ADDRESS],
+                user_input[CONF_PORT],
             )
-            if valid:
+            if device_info:
                 return self.async_create_entry(
-                    title=user_input[CONF_USERNAME], data=user_input
+                    title=device_info.get("deviceName") or user_input[CONF_IP_ADDRESS],
+                    description=user_input[CONF_IP_ADDRESS],
+                    data=user_input,
                 )
-            else:
-                self._errors["base"] = "auth"
 
             return await self._show_config_form(user_input)
 
         return await self._show_config_form(user_input)
 
-    @staticmethod
-    @callback
-    def async_get_options_flow(config_entry):
-        return ShutterboxOptionsFlowHandler(config_entry)
-
-    async def _show_config_form(self, user_input):  # pylint: disable=unused-argument
-        """Show the configuration form to edit location data."""
-        return self.async_show_form(
-            step_id="user",
-            data_schema=vol.Schema(
-                {vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str}
-            ),
-            errors=self._errors,
-        )
-
-    async def _test_credentials(self, username, password):
+    async def _test_config(
+            self,
+            ip_address: str,
+            port: int,
+    ) -> Optional[Dict[str, any]]:
         """Return true if credentials is valid."""
         try:
             session = async_create_clientsession(self.hass)
-            client = ShutterboxApiClient(username, password, session)
-            await client.async_get_data()
-            return True
-        except Exception:  # pylint: disable=broad-except
-            pass
-        return False
+            client = ShutterboxApiClient(ip_address, port, session, self.hass)
+            device_info = await client.async_get_device_info()
+            if device_info is not None:
+                unique_id = device_info.get("id") or ip_address
+                await self.async_set_unique_id(unique_id)
+            self._abort_if_unique_id_configured()
+            return device_info
+        except ErrorWithMessageId as ex:
+            message = f"{ex}"
+            _LOGGER.exception(message)
+            self._errors["base"] = ex.message_id()
+        except Exception as ex:
+            message = f"{ex}"
+            _LOGGER.exception(message)
+            self._errors['base'] = "unknown"
 
+        return None
 
-class ShutterboxOptionsFlowHandler(config_entries.OptionsFlow):
-    """Config flow options handler for blebox_shutterbox_tilt."""
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        return ShutterboxOptionsFlow(config_entry)
 
-    def __init__(self, config_entry):
-        """Initialize HACS options flow."""
-        self.config_entry = config_entry
-        self.options = dict(config_entry.options)
-
-    async def async_step_init(self, user_input=None):  # pylint: disable=unused-argument
-        """Manage the options."""
-        return await self.async_step_user()
-
-    async def async_step_user(self, user_input=None):
-        """Handle a flow initialized by the user."""
-        if user_input is not None:
-            self.options.update(user_input)
-            return await self._update_options()
-
+    async def _show_config_form(
+            self,
+            user_input: Optional[Dict[str, any]],
+    ):
+        """Show the configuration form to edit location data."""
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(x, default=self.options.get(x, True)): bool
-                    for x in sorted(PLATFORMS)
-                }
-            ),
-        )
-
-    async def _update_options(self):
-        """Update config entry options."""
-        return self.async_create_entry(
-            title=self.config_entry.data.get(CONF_USERNAME), data=self.options
+            data_schema=create_schema(user_input),
+            errors=self._errors,
         )

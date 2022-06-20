@@ -6,95 +6,69 @@ https://github.com/andrzejchm/blebox-shutterbox-tilt
 """
 import asyncio
 import logging
-from datetime import timedelta
+from typing import Dict
+from typing import Optional
 
+import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import Config
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .api import ShutterboxApiClient
-from .const import CONF_PASSWORD
-from .const import CONF_USERNAME
+from .const import API_CLIENT
+from .const import CONF_IP_ADDRESS
+from .const import CONF_PORT
+from .const import DATA
+from .const import DEFAULT_PORT
+from .const import DEVICE_INFO
 from .const import DOMAIN
 from .const import PLATFORMS
 from .const import STARTUP_MESSAGE
 
-SCAN_INTERVAL = timedelta(seconds=30)
-
 _LOGGER: logging.Logger = logging.getLogger(__package__)
-
-
-async def async_setup(hass: HomeAssistant, config: Config):
-    """Set up this integration using YAML is not supported."""
-    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up this integration using UI."""
     if hass.data.get(DOMAIN) is None:
-        hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
 
-    username = entry.data.get(CONF_USERNAME)
-    password = entry.data.get(CONF_PASSWORD)
+    hass.data.setdefault(DOMAIN, {})
+    hass.data[DOMAIN].setdefault(entry.entry_id, {})
+    hass.data[DOMAIN][entry.entry_id].setdefault(DATA, {})
+    hass.data[DOMAIN][entry.entry_id][DATA] = entry.data
+    ip_address = entry.data.get(CONF_IP_ADDRESS)
+    port = entry.data.get(CONF_PORT)
 
     session = async_get_clientsession(hass)
-    client = ShutterboxApiClient(username, password, session)
+    client = ShutterboxApiClient(ip_address, port, session, hass)
 
-    coordinator = ShutterboxDataUpdateCoordinator(hass, client=client)
-    await coordinator.async_refresh()
-
-    if not coordinator.last_update_success:
-        raise ConfigEntryNotReady
-
-    hass.data[DOMAIN][entry.entry_id] = coordinator
+    hass.data[DOMAIN][entry.entry_id][API_CLIENT] = client
+    try:
+        device_info = await client.async_get_device_info()
+    except ConfigEntryNotReady as ex:
+        raise ex
+    except Exception as ex:
+        raise ConfigEntryNotReady(f"{ex}") from ex
+    hass.data[DOMAIN][entry.entry_id][DEVICE_INFO] = device_info
 
     for platform in PLATFORMS:
-        if entry.options.get(platform, True):
-            coordinator.platforms.append(platform)
-            hass.async_add_job(
-                hass.config_entries.async_forward_entry_setup(entry, platform)
-            )
+        await hass.async_add_job(
+            hass.config_entries.async_forward_entry_setup(entry, platform)
+        )
 
     entry.add_update_listener(async_reload_entry)
     return True
 
 
-class ShutterboxDataUpdateCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching data from the API."""
-
-    def __init__(
-        self,
-        hass: HomeAssistant,
-        client: ShutterboxApiClient,
-    ) -> None:
-        """Initialize."""
-        self.api = client
-        self.platforms = []
-
-        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
-
-    async def _async_update_data(self):
-        """Update data via library."""
-        try:
-            return await self.api.async_get_data()
-        except Exception as exception:
-            raise UpdateFailed() from exception
-
-
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
     unloaded = all(
         await asyncio.gather(
             *[
                 hass.config_entries.async_forward_entry_unload(entry, platform)
                 for platform in PLATFORMS
-                if platform in coordinator.platforms
             ]
         )
     )
@@ -108,3 +82,27 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload config entry."""
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)
+
+
+def create_schema(
+        user_input: Optional[Dict[str, any]],
+) -> vol.Schema:
+    """creates schema for config flow and options flow"""
+    if user_input is not None:
+        ip_address = user_input.get(CONF_IP_ADDRESS) or ""
+        port = user_input.get(CONF_PORT) or DEFAULT_PORT
+    else:
+        ip_address = ""
+        port = DEFAULT_PORT
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_IP_ADDRESS,
+                default=ip_address,
+            ): str,
+            vol.Required(
+                CONF_PORT,
+                default=port,
+            ): int,
+        }
+    )

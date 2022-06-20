@@ -1,87 +1,90 @@
 """Tests for BleBox shutterBox with tilt api."""
 import asyncio
 
-import aiohttp
-from custom_components.blebox_shutterbox_tilt.api import (
-    ShutterboxApiClient,
-)
+import pytest
+from _pytest.logging import LogCaptureFixture
+from custom_components.blebox_shutterbox_tilt.api import ShutterboxApiClient
+from custom_components.blebox_shutterbox_tilt.errors import CannotConnectToShutterBox
+from custom_components.blebox_shutterbox_tilt.errors import InvalidDeviceTypeError
+from custom_components.blebox_shutterbox_tilt.errors import NoDeviceInfoError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
 
-async def test_api(hass, aioclient_mock, caplog):
+async def test_api(hass, aioclient_mock: AiohttpClientMocker, caplog: LogCaptureFixture):
     """Test API calls."""
 
     # To test the api submodule, we first create an instance of our API client
-    api = ShutterboxApiClient("test", "test", async_get_clientsession(hass))
+    api = ShutterboxApiClient("192.168.1.123", 80, async_get_clientsession(hass), hass)
 
     # Use aioclient_mock which is provided by `pytest_homeassistant_custom_components`
     # to mock responses to aiohttp requests. In this case we are telling the mock to
     # return {"test": "test"} when a `GET` call is made to the specified URL. We then
     # call `async_get_data` which will make that `GET` request.
     aioclient_mock.get(
-        "https://jsonplaceholder.typicode.com/posts/1", json={"test": "test"}
+        "http://192.168.1.123/api/device/state", json={
+            "device": {
+                "deviceName": "My ShutterBox",
+                "type": "shutterBox",
+                "product": "shutterBox",
+                "hv": "9.6",
+                "fv": "0.1013",
+                "universe": 0,
+                "apiLevel": "20190911",
+                "iconSet": 0,
+                "categories": [
+                    5
+                ],
+                "id": "f12a29130ce",
+                "ip": "192.168.2.184",
+                "availableFv": None
+            }
+        }
     )
-    assert await api.async_get_data() == {"test": "test"}
+    assert (await api.async_get_device_info()).get("deviceName") == "My ShutterBox"
 
-    # We do the same for `async_set_title`. Note the difference in the mock call
-    # between the previous step and this one. We use `patch` here instead of `get`
-    # because we know that `async_set_title` calls `api_wrapper` with `patch` as the
-    # first parameter
-    aioclient_mock.patch("https://jsonplaceholder.typicode.com/posts/1")
-    assert await api.async_set_title("test") is None
+    aioclient_mock.get("http://192.168.1.123/api/shutter/state", json={
+        "shutter": {
+            "state": 2,
+            "currentPos": {
+                "position": 92,
+                "tilt": 100
+            },
+            "desiredPos": {
+                "position": 92,
+                "tilt": 100
+            },
+            "favPos": {
+                "position": 240,
+                "tilt": 50
+            }
+        }
+    })
 
-    # In order to get 100% coverage, we need to test `api_wrapper` to test the code
-    # that isn't already called by `async_get_data` and `async_set_title`. Because the
-    # only logic that lives inside `api_wrapper` that is not being handled by a third
-    # party library (aiohttp) is the exception handling, we also want to simulate
-    # raising the exceptions to ensure that the function handles them as expected.
-    # The caplog fixture allows access to log messages in tests. This is particularly
-    # useful during exception handling testing since often the only action as part of
-    # exception handling is a logging statement
-    caplog.clear()
-    aioclient_mock.put(
-        "https://jsonplaceholder.typicode.com/posts/1", exc=asyncio.TimeoutError
-    )
-    assert (
-        await api.api_wrapper("put", "https://jsonplaceholder.typicode.com/posts/1")
-        is None
-    )
-    assert (
-        len(caplog.record_tuples) == 1
-        and "Timeout error fetching information from" in caplog.record_tuples[0][2]
-    )
+    assert (await api.async_get_cover_state()).get("shutter") is not None
 
-    caplog.clear()
-    aioclient_mock.post(
-        "https://jsonplaceholder.typicode.com/posts/1", exc=aiohttp.ClientError
+    aioclient_mock.clear_requests()
+    aioclient_mock.get(
+        "http://192.168.1.123/api/device/state", exc=asyncio.TimeoutError
     )
-    assert (
-        await api.api_wrapper("post", "https://jsonplaceholder.typicode.com/posts/1")
-        is None
-    )
-    assert (
-        len(caplog.record_tuples) == 1
-        and "Error fetching information from" in caplog.record_tuples[0][2]
-    )
+    with pytest.raises(CannotConnectToShutterBox):
+        await api.async_get_device_info()
 
-    caplog.clear()
-    aioclient_mock.post("https://jsonplaceholder.typicode.com/posts/2", exc=Exception)
-    assert (
-        await api.api_wrapper("post", "https://jsonplaceholder.typicode.com/posts/2")
-        is None
+    aioclient_mock.clear_requests()
+    aioclient_mock.get(
+        "http://192.168.1.123/api/device/state", json={"something": "else"}
     )
-    assert (
-        len(caplog.record_tuples) == 1
-        and "Something really wrong happened!" in caplog.record_tuples[0][2]
-    )
+    with pytest.raises(NoDeviceInfoError):
+        await api.async_get_device_info()
 
-    caplog.clear()
-    aioclient_mock.post("https://jsonplaceholder.typicode.com/posts/3", exc=TypeError)
-    assert (
-        await api.api_wrapper("post", "https://jsonplaceholder.typicode.com/posts/3")
-        is None
+    aioclient_mock.clear_requests()
+    aioclient_mock.get(
+        "http://192.168.1.123/api/device/state", json={
+            "device": {
+                "type": "lightBox",
+            }
+        }
+
     )
-    assert (
-        len(caplog.record_tuples) == 1
-        and "Error parsing information from" in caplog.record_tuples[0][2]
-    )
+    with pytest.raises(InvalidDeviceTypeError):
+        await api.async_get_device_info()
