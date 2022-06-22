@@ -4,7 +4,7 @@
   "domain_name": "blebox_shutterbox_tilt",
   "friendly_name": "BleBox shutterBox with tilt",
   "github_user": "andrzejchm",
-  "project_name": "blebox-shutterbox-tilt",
+  "project_name": "blebox_shutterbox_tilt",
   "test_suite": "yes",
   "version": "1.0.0"
 }

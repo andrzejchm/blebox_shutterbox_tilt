@@ -2,7 +2,7 @@
 Custom integration to integrate BleBox shutterBox with tilt with Home Assistant.
 
 For more details about this integration, please refer to
-https://github.com/andrzejchm/blebox-shutterbox-tilt
+https://github.com/andrzejchm/blebox_shutterbox_tilt
 """
 import asyncio
 import logging

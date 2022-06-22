@@ -5,7 +5,7 @@ DOMAIN = "blebox_shutterbox_tilt"
 DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "1.0.0"
 
-ISSUE_URL = "https://github.com/andrzejchm/blebox-shutterbox-tilt/issues"
+ISSUE_URL = "https://github.com/andrzejchm/blebox_shutterbox_tilt/issues"
 
 
 # Platforms
