@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "description": "Jeżeli potrzebujesz pomocy z konfiguracją, wejdź na: https://github.com/andrzejchm/blebox-shutterbox-tilt",
+        "description": "Jeżeli potrzebujesz pomocy z konfiguracją, wejdź na: https://github.com/andrzejchm/blebox_shutterbox_tilt",
         "data": {
           "ip_address": "Adres IP",
           "port": "Port"
