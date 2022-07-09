@@ -36,7 +36,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN].setdefault(entry.entry_id, {})
-    hass.data[DOMAIN][entry.entry_id].setdefault(DATA, {})
     hass.data[DOMAIN][entry.entry_id][DATA] = entry.data
     ip_address = entry.data.get(CONF_IP_ADDRESS)
     port = entry.data.get(CONF_PORT)

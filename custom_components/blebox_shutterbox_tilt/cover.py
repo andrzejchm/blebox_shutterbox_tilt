@@ -13,7 +13,9 @@ from homeassistant.const import STATE_CLOSED
 from homeassistant.const import STATE_CLOSING
 from homeassistant.const import STATE_OPEN
 from homeassistant.const import STATE_OPENING
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import ShutterboxApiClient
 from .const import API_CLIENT
@@ -26,7 +28,11 @@ _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=60)
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
+async def async_setup_entry(
+        hass: HomeAssistant,
+        entry: ConfigEntry,
+        async_add_devices: AddEntitiesCallback,
+):
     """Setup sensor platform."""
     api = hass.data[DOMAIN][entry.entry_id][API_CLIENT]
     async_add_devices([BleboxShutterboxCover(api, entry)], True)
@@ -44,13 +50,13 @@ class BleboxShutterboxCover(CoverEntity):
         self._api = api
         self._config_entry = config_entry
         self._attr_supported_features = (
-            CoverEntityFeature.SET_POSITION
-            | CoverEntityFeature.SET_POSITION
-            | CoverEntityFeature.OPEN
-            | CoverEntityFeature.CLOSE
-            | CoverEntityFeature.OPEN_TILT
-            | CoverEntityFeature.CLOSE_TILT
-            | CoverEntityFeature.SET_TILT_POSITION
+                CoverEntityFeature.SET_POSITION
+                | CoverEntityFeature.SET_POSITION
+                | CoverEntityFeature.OPEN
+                | CoverEntityFeature.CLOSE
+                | CoverEntityFeature.OPEN_TILT
+                | CoverEntityFeature.CLOSE_TILT
+                | CoverEntityFeature.SET_TILT_POSITION
         )
 
     @property
