@@ -50,13 +50,13 @@ class BleboxShutterboxCover(CoverEntity):
         self._api = api
         self._config_entry = config_entry
         self._attr_supported_features = (
-                CoverEntityFeature.SET_POSITION
-                | CoverEntityFeature.SET_POSITION
-                | CoverEntityFeature.OPEN
-                | CoverEntityFeature.CLOSE
-                | CoverEntityFeature.OPEN_TILT
-                | CoverEntityFeature.CLOSE_TILT
-                | CoverEntityFeature.SET_TILT_POSITION
+            CoverEntityFeature.SET_POSITION
+            | CoverEntityFeature.SET_POSITION
+            | CoverEntityFeature.OPEN
+            | CoverEntityFeature.CLOSE
+            | CoverEntityFeature.OPEN_TILT
+            | CoverEntityFeature.CLOSE_TILT
+            | CoverEntityFeature.SET_TILT_POSITION
         )
 
     @property
