@@ -57,6 +57,7 @@ class BleboxShutterboxCover(CoverEntity):
             | CoverEntityFeature.OPEN_TILT
             | CoverEntityFeature.CLOSE_TILT
             | CoverEntityFeature.SET_TILT_POSITION
+            | CoverEntityFeature.STOP
         )
 
     @property
