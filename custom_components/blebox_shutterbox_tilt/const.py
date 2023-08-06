@@ -3,7 +3,7 @@
 NAME = "BleBox shutterBox with tilt"
 DOMAIN = "blebox_shutterbox_tilt"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 ISSUE_URL = "https://github.com/andrzejchm/blebox_shutterbox_tilt/issues"
 
