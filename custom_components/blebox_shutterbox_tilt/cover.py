@@ -25,7 +25,7 @@ from .const import STATE
 from .const import VERSION
 
 _LOGGER = logging.getLogger(__name__)
-SCAN_INTERVAL = timedelta(seconds=60)
+SCAN_INTERVAL = timedelta(seconds=5)
 
 
 async def async_setup_entry(
